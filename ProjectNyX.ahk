@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 
 ; ==========================================
@@ -68,8 +68,8 @@ global BiomeAliases := Map(
     "NORMAL",      ["NORMAL", "DAY", "DAYTIME"]
 )
 
-global WeatherBiomes := ["NORMAL", "WINDY", "RAINY", "SNOWY", "SANDSTORM", "BLAZING SUN"]
-global RareBiomes := ["HELL", "HEAVEN", "STARFALL", "CORRUPTION", "NULL", "CYBERSPACE", "GLITCHED", "DREAMSPACE", "EGGLAND", "SINGULARITY"]
+global WeatherBiomes := ["NORMAL", "WINDY", "RAINY", "SNOWY", "SANDSTORM", "BLAZING SUN",  "HELL",  "HEAVEN",  "STARFALL",  "CORRUPTION",  "NULL"]
+global RareBiomes := [ "CYBERSPACE", "GLITCHED", "DREAMSPACE",  ]
 global AllBiomes := ["NORMAL", "WINDY", "RAINY", "SNOWY", "SANDSTORM", "BLAZING SUN", "HELL", "HEAVEN", "STARFALL", "CORRUPTION", "NULL", "CYBERSPACE", "GLITCHED", "DREAMSPACE", "EGGLAND", "SINGULARITY"]
 
 global PotionList := [
