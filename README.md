@@ -1,5 +1,5 @@
 # ProjectNyX-Macro
-Best Macro for Roblox right now!
+Best Macro Sol RNG for single player right now!
 
 ## I : About the macro
 - Biome Detection with a 99.98% success rate, sending updates directly to your Discord Webhook!
