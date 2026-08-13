@@ -773,7 +773,7 @@ SendWebhookEmbed(biomeName, eventType, startTime := "") {
     timeStr := FormatTime(, "HH:mm:ss - dd/MM/yyyy")
     
     if (eventType == "started") {
-        titleText := "⚡ Biome Detected - " . bKey
+        titleText := "⚡ Biome Started - " . bKey
         descJson := '"description": ' . JsonEscape("Join Server: " . PSLink) . ', '
         fieldsJson := '[{"name": "👤 Username", "value": "' . Username . '", "inline": true}, {"name": "⏰ Start Time", "value": "' . timeStr . '", "inline": true}]'
     } else {
