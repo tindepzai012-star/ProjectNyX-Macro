@@ -34,7 +34,7 @@ global BiomeData := Map(
     "WINDY",       {color: "38BDF8", image: "https://static.wikia.nocookie.net/sol-rng/images/c/c9/Daytime_img.png"},
     "RAINY",       {color: "10B981", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4jrbtgFLDivta_Vdw-P1x0Uyk1B16IRRbmI2EHF3Jaw&s=10"},
     "SNOWY",       {color: "FFFFFF", image: "https://static0.thegamerimages.com/wordpress/wp-content/uploads/wm/2025/02/winter-forest-in-sol-s-rng-1.jpg"},
-    "SANDSTORM",   {color: "F59E0B", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnOwtPaYGYOZ-pa7NenFu1VFyATtxwoPNWbALTjlf8DDVeyd7PrzdEIGLX&s=10"},
+    "SANDSTORM",   {color: "F59E0B", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRe3u_-Dx4ioGSxB97c108_q_WwfGfd9IsZWi9DCudsOQ&s=10"},
     "BLAZING SUN", {color: "FFBB00", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnOwtPaYGYOZ-pa7NenFu1VFyATtxwoPNWbALTjlf8DDVeyd7PrzdEIGLX&s=10"},
     "CYBERSPACE",  {color: "00FFFF", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSXjCDnj21Cy1vUKeaAv2XZvcrP-gkItL_wWGveraQng&s=10"},
     "HELL",        {color: "FF3300", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfZ_ojtPs4DOuF6XOL5B4h-d64TZ43-p8ERWfVMX7NJVmBjKNzxE6zU1k&s=10"},
@@ -42,7 +42,7 @@ global BiomeData := Map(
     "STARFALL",    {color: "38BDF8", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCecnufgzGJHYTdQLXLqugYrVumwcSty_brAymPSsDKg&s=10"},
     "CORRUPTION",  {color: "AA00AA", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTj5oSJyewPlF6uYx-0DgMtfR06pfGRDLzn2RfqeBMiL-CR_KdTC8dNhLHN&s=10"},
     "NULL",        {color: "AAAAAA", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5XeQvNZtLhXzo8x2N-hYpm61TgbcECwxHSWYiQrmW3A&s=10"},
-    "GLITCHED",    {color: "FFFF00", image: "https://static.wikia.nocookie.net/sol-rng/images/c/cd/Glitch_Tree.png"},
+    "GLITCHED",    {color: "FFFF00", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVESenY9jm99WKhQaAGbwCQHXPeCkm_m-sEgl6mD2uxA&s"},
     "DREAMSPACE",  {color: "FF00FF", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6CQBEjtFn9V6rWutOgKQ4KfHwaqS05YDXSY9ApTydBA&s=10"},
     "EGGLAND",     {color: "00FFFF", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwLhCATdaobzpQlVWP1w6Wqns_O7lbO_o1BGeshZZqeg&s=10"},
     "SINGULARITY", {color: "FF8800", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwLhCATdaobzpQlVWP1w6Wqns_O7lbO_o1BGeshZZqeg&s=10"}
