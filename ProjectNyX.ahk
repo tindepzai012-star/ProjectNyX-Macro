@@ -2,9 +2,9 @@
 #SingleInstance Force
 
 ; ==========================================
-; PROJECT NYX V1.1.9 - TYPABLE HOTKEYS FIX
+; PROJECT NYX V1.2.4 - CLIENT COORDS FIX
 ; ==========================================
-global CURRENT_VER := "Project NyX V1.1.9"
+global CURRENT_VER := "Project NyX V1.2.4"
 global FOOTER_TEXT := CURRENT_VER
 global LIGHTNING_ICON_URL := "https://cdn-icons-png.flaticon.com/512/1163/1163657.png"
 global IniFile := "nyx_config.ini"
@@ -32,14 +32,13 @@ global OldHkPause := HkPause
 global OldHkStop  := HkStop
 global OldHkGui   := HkGui
 
-; --- 6-Step Coordinates ---
+; --- 6-Step Coordinates (Assumes Inventory is ALWAYS OPEN) ---
 global StepCoords := Map(
-    1, {x: Integer(IniRead(IniFile, "Coordinates", "Step1_X", 36)),   y: Integer(IniRead(IniFile, "Coordinates", "Step1_Y", 535))},
-    2, {x: Integer(IniRead(IniFile, "Coordinates", "Step2_X", 1272)), y: Integer(IniRead(IniFile, "Coordinates", "Step2_Y", 329))},
-    3, {x: Integer(IniRead(IniFile, "Coordinates", "Step3_X", 855)),  y: Integer(IniRead(IniFile, "Coordinates", "Step3_Y", 358))},
-    4, {x: Integer(IniRead(IniFile, "Coordinates", "Step4_X", 845)),  y: Integer(IniRead(IniFile, "Coordinates", "Step4_Y", 460))},
-    5, {x: Integer(IniRead(IniFile, "Coordinates", "Step5_X", 594)),  y: Integer(IniRead(IniFile, "Coordinates", "Step5_Y", 570))},
-    6, {x: Integer(IniRead(IniFile, "Coordinates", "Step6_X", 710)),  y: Integer(IniRead(IniFile, "Coordinates", "Step6_Y", 573))}
+    1, {x: Integer(IniRead(IniFile, "Coordinates", "Step1_X", 1272)), y: Integer(IniRead(IniFile, "Coordinates", "Step1_Y", 329))}, ; Items Tab
+    2, {x: Integer(IniRead(IniFile, "Coordinates", "Step2_X", 855)),  y: Integer(IniRead(IniFile, "Coordinates", "Step2_Y", 358))}, ; Search Bar
+    3, {x: Integer(IniRead(IniFile, "Coordinates", "Step3_X", 845)),  y: Integer(IniRead(IniFile, "Coordinates", "Step3_Y", 460))}, ; First Slot
+    4, {x: Integer(IniRead(IniFile, "Coordinates", "Step4_X", 594)),  y: Integer(IniRead(IniFile, "Coordinates", "Step4_Y", 570))}, ; Quantity Box
+    5, {x: Integer(IniRead(IniFile, "Coordinates", "Step5_X", 710)),  y: Integer(IniRead(IniFile, "Coordinates", "Step5_Y", 573))}  ; Use Button
 )
 
 ; ==========================================
@@ -134,13 +133,13 @@ tabs := myGui.Add("Tab3", "x10 y10 w760 h730", ["⚡ Dashboard", "🎒 Auto Pop"
 tabs.UseTab(1)
 myGui.SetFont("s10 Bold", "Segoe UI")
 global BtnStart := myGui.Add("Button", "x25 y40 w120 h35 c00FF00", "▶ START (" HkStart ")")
-BtnStart.OnEvent("Click", (*) => StartMacro())
+BtnStart.OnEvent("Click", GUI_StartMacro)
 
 global BtnPause := myGui.Add("Button", "x155 y40 w120 h35 cFFFF00", "⏸ PAUSE (" HkPause ")")
-BtnPause.OnEvent("Click", (*) => PauseMacro())
+BtnPause.OnEvent("Click", GUI_PauseMacro)
 
 global BtnStop := myGui.Add("Button", "x285 y40 w120 h35 cFF0000", "⏹ STOP (" HkStop ")")
-BtnStop.OnEvent("Click", (*) => StopMacro())
+BtnStop.OnEvent("Click", GUI_StopMacro)
 
 global LblStatus := myGui.Add("Text", "x25 y82 w280 +0x800 cFF0000", "STATUS: STOPPED")
 global LblTimer := myGui.Add("Text", "x320 y82 w200 +0x800 c" CurrentTheme.accent, "RUNNING: 00:00:00")
@@ -149,7 +148,7 @@ global LblCurrentBiome := myGui.Add("Text", "x25 y105 w500 +0x800 cFFFF00", "Cur
 myGui.Add("GroupBox", "x25 y125 w710 h560 c" CurrentTheme.group, " 📊 Biome Counter Dashboard ")
 global LblTotalCount := myGui.Add("Text", "x40 y150 w200 +0x800 c00FF00", "Total Detected: 0")
 global LblRareCount := myGui.Add("Text", "x250 y150 w200 +0x800 cFF00FF", "Rare Biomes: 0")
-myGui.Add("Button", "x595 y146 w125 h26", "🔄 Reset Counts").OnEvent("Click", ResetCounts)
+myGui.Add("Button", "x595 y146 w125 h26", "🔄 Reset Counts").OnEvent("Click", GUI_ResetCounts)
 
 global BiomeLabels := Map()
 yPos := 185
@@ -185,17 +184,17 @@ CbStrangeCtrl.Value := Integer(IniRead(IniFile, "Settings", "CbStrangeCtrl", 0))
 
 myGui.Add("Text", "x435 y64 w70 +0x800 cFFFFFF", "⏱️ CD (s):")
 global EdInvCooldown := myGui.Add("Edit", "x505 y60 w50", InvCooldown)
-myGui.Add("Button", "x580 y58 w145 h28 c00FF00", "💾 Save All Pop").OnEvent("Click", SaveInvSettings)
+myGui.Add("Button", "x580 y58 w145 h28 c00FF00", "💾 Save All Pop").OnEvent("Click", GUI_SaveInvSettings)
 
 ; Auto Potion configuration
 myGui.Add("GroupBox", "x25 y95 w710 h225 c" CurrentTheme.group, " 🧪 PER-BIOME AUTO POTION CONFIGURATION ")
-myGui.Add("Text", "x40 y120 w120 +0x800 cFFFF00", "Select Biome:")
+myGui.Add("Text", "x40 y120 w100 +0x800 cFFFF00", "Select Biome:")
 
 global DdlBiomes := myGui.Add("DropDownList", "x130 y117 w180 Choose1", AllBiomes)
-DdlBiomes.OnEvent("Change", OnBiomeSelectionChanged)
+DdlBiomes.OnEvent("Change", GUI_OnBiomeSelectionChanged)
 
 global BtnResetOneShot := myGui.Add("Button", "x325 y116 w140 h28 cFF00FF", "🔄 Reset One-Shot")
-BtnResetOneShot.OnEvent("Click", ResetOneShotTrackers)
+BtnResetOneShot.OnEvent("Click", GUI_ResetOneShotTrackers)
 
 global LblBiomeOneShotStatus := myGui.Add("Text", "x480 y120 w180 +0x800 c00FF00", "Status: Waiting")
 
@@ -211,11 +210,11 @@ for bName in AllBiomes {
         pQty := Integer(IniRead(IniFile, sectionName, keySanitized "_Qty", 1))
         
         colX := (A_Index <= 4) ? 45 : 390
-        rowY := (A_Index <= 4) ? (yOff + (A_Index - 1) * 35) : (yOff + (A_Index - 5) * 35)
+        rowY := (A_Index <= 4) ? (yOff + (A_Index - 1) * 30) : (yOff + (A_Index - 5) * 30)
         
         cb := myGui.Add("CheckBox", "x" colX " y" rowY " w200 cFFFFFF Hidden", pName)
         cb.Value := pEnable
-        cb.OnEvent("Click", (*) => UpdateStep5State())
+        cb.OnEvent("Click", GUI_UpdateStep5State)
         
         lbl := myGui.Add("Text", "x" (colX + 210) " y" (rowY + 2) " w35 +0x800 c" CurrentTheme.accent " Hidden", "Qty:")
         ed := myGui.Add("Edit", "x" (colX + 245) " y" (rowY - 2) " w55 Number Hidden", pQty)
@@ -228,19 +227,18 @@ ShowControlsForBiome("NORMAL")
 
 ; Coordinates Calibration
 myGui.Add("GroupBox", "x25 y330 w710 h345 c" CurrentTheme.group, " 🛠️ INVENTORY COORDINATES CALIBRATION ")
-myGui.SetFont("s8 Bold Italic", "Segoe UI")
-myGui.Add("Text", "x40 y350 w650 h20 +0x800 cFFBB00", "💡 Note: Please OPEN YOUR INVENTORY in Roblox before clicking Calibrate!")
+myGui.SetFont("s9 Bold", "Segoe UI")
+myGui.Add("Text", "x40 y350 w650 h20 +0x800 cFF0000", "⚠️ CRITICAL: YOU MUST KEEP THE ROBLOX INVENTORY OPEN BEFORE STARTING!")
 myGui.SetFont("s9", "Segoe UI")
 
 global BtnSteps := Map()
 global LblXYZs := Map()
 stepData := [
-    {desc: "1. Inventory Menu Button"},
-    {desc: "2. Items Tab"},
-    {desc: "3. Search Bar"},
-    {desc: "4. First Item Slot"},
-    {desc: "5. Quantity Box (Used for Auto Pop)"},
-    {desc: "6. Use / Close Button"}
+    {desc: "1. Items Tab"},
+    {desc: "2. Search Bar"},
+    {desc: "3. First Item Slot"},
+    {desc: "4. Quantity Box (Disabled if no potion selected)"},
+    {desc: "5. Use Button"}
 ]
 
 currY := 380
@@ -262,7 +260,7 @@ loop stepData.Length {
 UpdateStep5State()
 
 myGui.SetFont("s9", "Segoe UI")
-myGui.Add("Button", "x210 y625 w320 h30 c" CurrentTheme.accent, "▶ Test All Steps (Safe Clipboard Paste)").OnEvent("Click", (*) => RunFullStepsWithCountdown())
+myGui.Add("Button", "x210 y625 w320 h30 c" CurrentTheme.accent, "▶ Test All Steps (Safe Clipboard Paste)").OnEvent("Click", GUI_RunFullSteps)
 
 ; --- TAB 3: LOG MONITOR ---
 tabs.UseTab(3)
@@ -271,8 +269,8 @@ myGui.Add("Text", "x25 y40 w710 +0x800 c" CurrentTheme.accent, "📂 ROBLOX LOG 
 myGui.SetFont("s9", "Segoe UI")
 global LblLogPath := myGui.Add("Text", "x25 y70 w710 h40 +0x800 cFFFF00", "Pointing to log file...")
 
-myGui.Add("Button", "x25 y115 w160 h28 c00FF00", "🔍 Refresh Log Path").OnEvent("Click", RefreshLogPath)
-myGui.Add("Button", "x195 y115 w180 h28 cFF00FF", "🐛 Scan Current Log Now").OnEvent("Click", ForceScanLogNow)
+myGui.Add("Button", "x25 y115 w160 h28 c00FF00", "🔍 Refresh Log Path").OnEvent("Click", GUI_RefreshLogPath)
+myGui.Add("Button", "x195 y115 w180 h28 cFF00FF", "🐛 Scan Current Log Now").OnEvent("Click", GUI_ForceScanLogNow)
 
 global EdLogs := myGui.Add("Edit", "x25 y155 w710 h530 ReadOnly VScroll Background111111 c00FFCC", "")
 
@@ -285,12 +283,11 @@ myGui.SetFont("s9 Bold", "Segoe UI")
 myGui.Add("Text", "x25 y68 w120 +0x800 c" CurrentTheme.accent, "🎨 Theme Color:")
 global DdlTheme := myGui.Add("DropDownList", "x145 y65 w240 Choose1", ["Cyberpunk Cyan", "Royal Violet", "Emerald Matrix", "Crimson Blade", "Imperial Gold"])
 DdlTheme.Text := SelectedTheme
-DdlTheme.OnEvent("Change", OnThemeChanged)
+DdlTheme.OnEvent("Change", GUI_OnThemeChanged)
 
 myGui.Add("GroupBox", "x25 y110 w710 h150 c" CurrentTheme.group, " ⌨️ Macro Hotkeys ")
 myGui.SetFont("s9", "Segoe UI")
 
-; Thay đổi Hotkey -> Edit để người dùng có thể gõ trực tiếp chữ "H" hoặc "F1"
 myGui.Add("Text", "x45 y140 w100 cFFFFFF", "Start Macro:")
 global CtrlStart := myGui.Add("Edit", "x150 y136 w180", HkStart)
 
@@ -307,7 +304,7 @@ myGui.SetFont("s8 Italic", "Segoe UI")
 myGui.Add("Text", "x45 y220 w600 cFFBB00", "💡 Tip: Type the key name directly (e.g., F1, H, Home, End, ^H for Ctrl+H).")
 myGui.SetFont("s9", "Segoe UI")
 
-myGui.Add("Button", "x25 y280 w150 h28 c00FF00", "💾 Save Settings").OnEvent("Click", SaveHotkeysSettings)
+myGui.Add("Button", "x25 y280 w150 h28 c00FF00", "💾 Save Settings").OnEvent("Click", GUI_SaveHotkeysSettings)
 
 ; --- TAB 5: DISCORD WEBHOOKS & 16 BIOMES ---
 tabs.UseTab(5)
@@ -322,8 +319,8 @@ global EdUsername := myGui.Add("Edit", "x145 y109 w240", Username)
 myGui.Add("Text", "x25 y145 w120 +0x800 c" CurrentTheme.accent, "Private Server:")
 global EdPS := myGui.Add("Edit", "x145 y142 w580", PSLink)
 
-myGui.Add("Button", "x145 y175 w140 h28 c00FF00", "💾 Save Webhooks").OnEvent("Click", SaveWebhookSettings)
-myGui.Add("Button", "x295 y175 w140 h28 cFF00FF", "🧪 Test Webhook").OnEvent("Click", TestWebhookAction)
+myGui.Add("Button", "x145 y175 w140 h28 c00FF00", "💾 Save Webhooks").OnEvent("Click", GUI_SaveWebhookSettings)
+myGui.Add("Button", "x295 y175 w140 h28 cFF00FF", "🧪 Test Webhook").OnEvent("Click", GUI_TestWebhookAction)
 
 myGui.Add("GroupBox", "x25 y210 w710 h475 c" CurrentTheme.group, " 🔔 BIOME NOTIFICATIONS & PING SETTINGS (16 BIOMES) ")
 
@@ -343,22 +340,17 @@ loop AllBiomes.Length {
     baseX := (col == 1) ? 35 : 390
     baseY := 230 + (rowInCol - 1) * 27
     
-    ; Cột 1: Tên Biome
     myGui.Add("Text", "x" baseX " y" (baseY + 3) " w85 h18 +0x800 c" bColor, "● " b)
-    
-    ; Cột 2: Bật tắt gửi Webhook
     cbSend := myGui.Add("CheckBox", "x" (baseX + 85) " y" baseY " w55 cFFFFFF", isRare ? "LOCKED" : "Send")
     cbSend.Value := sSend
     if isRare
         cbSend.Enabled := false
         
-    ; Cột 3: Bật tắt Ping
     cbPing := myGui.Add("CheckBox", "x" (baseX + 145) " y" baseY " w50 c" CurrentTheme.accent, "Ping")
     cbPing.Value := sPing
     if isRare
         cbPing.Enabled := false
         
-    ; Cột 4: Nhập Ping ID
     edId := myGui.Add("Edit", "x" (baseX + 195) " y" (baseY - 2) " w135", sId)
     if isRare
         edId.Enabled := false
@@ -381,12 +373,75 @@ myGui.Add("Text", "x75 y225 w560 +0x800 c00FFCC", "• Official Tester: lordchym
 myGui.Add("Text", "x75 y260 w560 +0x800 c" CurrentTheme.accent, "• Group Status: Exclusive for Sol's RNG Macro.")
 myGui.Add("GroupBox", "x75 y310 w580 h200 cFF00FF", " 💬 Message from Dev ")
 myGui.SetFont("s9 Italic", "Segoe UI")
-myGui.Add("Text", "x95 y350 w540 +0x800 cFFFF00", "Project NyX V1.1.9: Typable Hotkeys Fixed, Full English UI, 6-Step Calibrate.")
+myGui.Add("Text", "x95 y350 w540 +0x800 cFFFF00", "Project NyX V1.2.4: Fixed Client Coordinates drift in Calibration!")
 
 myGui.Show("w780 h750")
 ApplyHotkeys()
 RefreshLogPath()
 UpdateDashboardUI()
+
+; ==========================================
+; GUI EVENT WRAPPERS (CLEAN ARCHITECTURE)
+; ==========================================
+GUI_StartMacro(ctrl, info) {
+    StartMacro()
+}
+GUI_PauseMacro(ctrl, info) {
+    PauseMacro()
+}
+GUI_StopMacro(ctrl, info) {
+    StopMacro()
+}
+GUI_ResetCounts(ctrl, info) {
+    ResetCounts()
+}
+GUI_SaveInvSettings(ctrl, info) {
+    SaveInvSettings()
+}
+GUI_OnBiomeSelectionChanged(ctrl, info) {
+    OnBiomeSelectionChanged(ctrl, info)
+}
+GUI_ResetOneShotTrackers(ctrl, info) {
+    ResetOneShotTrackers()
+}
+GUI_UpdateStep5State(ctrl, info) {
+    UpdateStep5State()
+}
+GUI_RunFullSteps(ctrl, info) {
+    RunFullStepsWithCountdown()
+}
+GUI_RefreshLogPath(ctrl, info) {
+    RefreshLogPath()
+}
+GUI_ForceScanLogNow(ctrl, info) {
+    ForceScanLogNow()
+}
+GUI_OnThemeChanged(ctrl, info) {
+    OnThemeChanged(ctrl, info)
+}
+GUI_SaveHotkeysSettings(ctrl, info) {
+    SaveHotkeysSettings()
+}
+GUI_SaveWebhookSettings(ctrl, info) {
+    SaveWebhookSettings()
+}
+GUI_TestWebhookAction(ctrl, info) {
+    TestWebhookAction()
+}
+
+; --- HOTKEY WRAPPERS ---
+HkWrapper_StartMacro(hk) {
+    StartMacro()
+}
+HkWrapper_PauseMacro(hk) {
+    PauseMacro()
+}
+HkWrapper_StopMacro(hk) {
+    StopMacro()
+}
+HkWrapper_ToggleGui(hk) {
+    ToggleGuiVisibility()
+}
 
 ; ==========================================
 ; CALIBRATION & STEP FUNCTIONS
@@ -406,22 +461,22 @@ HasActivePotionsForCurrentBiome() {
 
 UpdateStep5State() {
     global BtnSteps, LblXYZs, StepCoords
-    if !IsSet(BtnSteps) || !BtnSteps.Has(5)
+    if !IsSet(BtnSteps) || !BtnSteps.Has(4)
         return
         
     if HasActivePotionsForCurrentBiome() {
-        BtnSteps[5].Enabled := true
-        LblXYZs[5].Value := "X: " StepCoords[5].x ", Y: " StepCoords[5].y
-        LblXYZs[5].Opt("c00FF00")
+        BtnSteps[4].Enabled := true
+        LblXYZs[4].Value := "X: " StepCoords[4].x ", Y: " StepCoords[4].y
+        LblXYZs[4].Opt("c00FF00")
     } else {
-        BtnSteps[5].Enabled := false
-        LblXYZs[5].Value := "(Disabled - No potion selected)"
-        LblXYZs[5].Opt("c888888")
+        BtnSteps[4].Enabled := false
+        LblXYZs[4].Value := "(Disabled - No potion selected)"
+        LblXYZs[4].Opt("c888888")
     }
 }
 
 BindTestStep(stepNum, btnCtrl, lblXYZCtrl) {
-    return (*) => RunStepWithCountdown(stepNum, btnCtrl, lblXYZCtrl)
+    return (ctrl, info) => RunStepWithCountdown(stepNum, btnCtrl, lblXYZCtrl)
 }
 
 RunStepWithCountdown(stepNum, btnCtrl, lblXYZCtrl) {
@@ -434,15 +489,15 @@ RunStepWithCountdown(stepNum, btnCtrl, lblXYZCtrl) {
         Sleep(1000)
     }
     
-    CoordMode("Mouse", "Screen")
-    MouseGetPos(&screenX, &screenY)
-    
-    relX := screenX
-    relY := screenY
+    ; Chuyển sang Roblox lấy Client Coords
     if WinExist("ahk_exe RobloxPlayerBeta.exe") {
-        WinGetPos(&winX, &winY, , , "ahk_exe RobloxPlayerBeta.exe")
-        relX := screenX - winX
-        relY := screenY - winY
+        WinActivate("ahk_exe RobloxPlayerBeta.exe")
+        Sleep(150)
+        CoordMode("Mouse", "Client")
+        MouseGetPos(&relX, &relY)
+    } else {
+        CoordMode("Mouse", "Screen")
+        MouseGetPos(&relX, &relY)
     }
     
     StepCoords[stepNum] := {x: relX, y: relY}
@@ -452,12 +507,13 @@ RunStepWithCountdown(stepNum, btnCtrl, lblXYZCtrl) {
     IniWrite(relX, IniFile, "Coordinates", "Step" stepNum "_X")
     IniWrite(relY, IniFile, "Coordinates", "Step" stepNum "_Y")
     
-    LogMsg("[Calibration] Saved coordinates for Step " stepNum ": [X: " relX ", Y: " relY "]")
+    LogMsg("[Calibration] Saved CLIENT coordinates for Step " stepNum ": [X: " relX ", Y: " relY "]")
 }
 
 SmoothMove(targetX, targetY) {
     if !WinActive("ahk_exe RobloxPlayerBeta.exe")
-        return
+        WinActivate("ahk_exe RobloxPlayerBeta.exe")
+    Sleep(50)
     CoordMode("Mouse", "Client")
     MouseGetPos(&startX, &startY)
     steps := 15
@@ -473,14 +529,14 @@ SmoothMove(targetX, targetY) {
 
 RunFullStepsWithCountdown() {
     if !WinExist("ahk_exe RobloxPlayerBeta.exe") {
-        LogMsg("[Test Error] Roblox window not found!")
+        LogMsg("[Test Error] Roblox window not found! Open your inventory first.")
         return
     }
     WinActivate("ahk_exe RobloxPlayerBeta.exe")
     Sleep(300)
     
     hasPotions := HasActivePotionsForCurrentBiome()
-    stepsToRun := hasPotions ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 6]
+    stepsToRun := hasPotions ? [1, 2, 3, 4, 5] : [1, 2, 3, 5]
     searchKeyword := hasPotions ? "Lucky Potion" : "Biome Randomizer"
     
     for stepIdx in stepsToRun {
@@ -490,15 +546,15 @@ RunFullStepsWithCountdown() {
         Click()
         Sleep(200)
         
-        if (stepIdx == 3) {
+        if (stepIdx == 2) {
             SafeClipboardPaste(searchKeyword)
             Sleep(250)
-        } else if (stepIdx == 5 && hasPotions) {
+        } else if (stepIdx == 4 && hasPotions) {
             SafeClipboardPaste("1")
             Sleep(200)
         }
     }
-    LogMsg("[Test] Completed test sequence!")
+    LogMsg("[Test] Completed test sequence! (Inventory left open)")
 }
 
 ; ==========================================
@@ -511,7 +567,7 @@ OnThemeChanged(ctrl, info) {
     Reload()
 }
 
-SaveHotkeysSettings(*) {
+SaveHotkeysSettings() {
     global HkStart, HkPause, HkStop, HkGui
     global CtrlStart, CtrlPause, CtrlStop, CtrlGui
     
@@ -538,7 +594,6 @@ ApplyHotkeys() {
     global HkStart, HkPause, HkStop, HkGui
     global OldHkStart, OldHkPause, OldHkStop, OldHkGui
     
-    ; Gỡ bỏ phím cũ nếu có
     if (OldHkStart != "")
         try Hotkey("~" . OldHkStart, "Off")
     if (OldHkPause != "")
@@ -548,15 +603,14 @@ ApplyHotkeys() {
     if (OldHkGui != "")
         try Hotkey("~" . OldHkGui, "Off")
     
-    ; Đăng ký phím mới với prefix ~ (Passthrough)
     if (HkStart != "")
-        try Hotkey("~" . HkStart, (*) => StartMacro(), "On")
+        try Hotkey("~" . HkStart, HkWrapper_StartMacro, "On")
     if (HkPause != "")
-        try Hotkey("~" . HkPause, (*) => PauseMacro(), "On")
+        try Hotkey("~" . HkPause, HkWrapper_PauseMacro, "On")
     if (HkStop != "")
-        try Hotkey("~" . HkStop,  (*) => StopMacro(), "On")
+        try Hotkey("~" . HkStop,  HkWrapper_StopMacro, "On")
     if (HkGui != "")
-        try Hotkey("~" . HkGui,   (*) => ToggleGuiVisibility(), "On")
+        try Hotkey("~" . HkGui,   HkWrapper_ToggleGui, "On")
     
     OldHkStart := HkStart
     OldHkPause := HkPause
@@ -576,23 +630,6 @@ ToggleGuiVisibility() {
 ; ==========================================
 ; HELPER & STATE FUNCTIONS
 ; ==========================================
-GetLatestPlayerLogFile() {
-    logDir := EnvGet("LOCALAPPDATA") "\Roblox\logs"
-    latestFile := ""
-    latestTime := 0
-    
-    Loop Files logDir "\*.log" {
-        if (InStr(A_LoopFileName, "Launcher") || InStr(A_LoopFileName, "Crash"))
-            continue
-            
-        if (A_LoopFileTimeModified > latestTime) {
-            latestTime := A_LoopFileTimeModified
-            latestFile := A_LoopFilePath
-        }
-    }
-    return latestFile
-}
-
 ShowControlsForBiome(biomeName) {
     global PotionControlsPerBiome, PoppedBiomesTracker, LblBiomeOneShotStatus
     
@@ -618,7 +655,7 @@ OnBiomeSelectionChanged(ctrl, info) {
     ShowControlsForBiome(ctrl.Text)
 }
 
-ResetOneShotTrackers(*) {
+ResetOneShotTrackers() {
     global PoppedBiomesTracker, DdlBiomes, LblBiomeOneShotStatus
     currentBiome := DdlBiomes.Text
     PoppedBiomesTracker[currentBiome] := false
@@ -648,6 +685,7 @@ StartMacro() {
         LblStatus.Value := "STATUS: RUNNING"
         LblStatus.Opt("cLime")
         LogMsg("🚀 Project NyX Macro system STARTED!")
+        LogMsg("⚠️ CRITICAL: KEEP ROBLOX INVENTORY OPEN AT ALL TIMES!")
         SendMacroStatusWebhook("started")
         
         InitLogStateOnStart()
@@ -697,7 +735,7 @@ LogMsg(text) {
     PostMessage(0x0115, 7, 0, EdLogs.Hwnd)
 }
 
-SaveWebhookSettings(*) {
+SaveWebhookSettings() {
     global WebhookURL, Username, PSLink, BiomeWebhookControls
     WebhookURL := EdWebhook.Value
     Username := EdUsername.Value
@@ -717,7 +755,7 @@ SaveWebhookSettings(*) {
     LogMsg("[Webhooks] Discord & Biome Webhooks saved!")
 }
 
-SaveInvSettings(*) {
+SaveInvSettings() {
     global InvCooldown, PotionControlsPerBiome
     InvCooldown := EdInvCooldown.Value
     IniWrite(InvCooldown, IniFile, "Settings", "InvCooldown")
@@ -794,7 +832,7 @@ AutoInventoryLoop() {
         if !WinActive("ahk_exe RobloxPlayerBeta.exe")
             WinActivate("ahk_exe RobloxPlayerBeta.exe")
             
-        stepsToRun := [1, 2, 3, 4, 6]
+        stepsToRun := [1, 2, 3, 5]
         for stepIdx in stepsToRun {
             if (!IsRunning || IsPaused || IsPopping || !WinActive("ahk_exe RobloxPlayerBeta.exe"))
                 break
@@ -805,7 +843,7 @@ AutoInventoryLoop() {
             Click()
             Sleep(150)
             
-            if (stepIdx == 3) {
+            if (stepIdx == 2) {
                 SafeClipboardPaste(searchKeyword)
                 Sleep(200)
             }
@@ -835,7 +873,7 @@ ExecutePerBiomeAutoPop(currentBiome) {
     }
         
     IsPopping := true
-    LogMsg("🧪 [Auto Pop] Popping potions for [" currentBiome "]...")
+    LogMsg("🧪 [Auto Pop] Popping potions for [" currentBiome "]... BR/SC locked.")
     
     if !WinActive("ahk_exe RobloxPlayerBeta.exe")
         WinActivate("ahk_exe RobloxPlayerBeta.exe")
@@ -847,7 +885,7 @@ ExecutePerBiomeAutoPop(currentBiome) {
             
         LogMsg("🧪 [Auto Pop] Using: " item.name " | Qty: " item.qty "...")
         
-        stepsToRun := [1, 2, 3, 4, 5, 6]
+        stepsToRun := [1, 2, 3, 4, 5]
         for stepIdx in stepsToRun {
             if (!IsRunning || IsPaused || !WinActive("ahk_exe RobloxPlayerBeta.exe"))
                 break
@@ -858,10 +896,10 @@ ExecutePerBiomeAutoPop(currentBiome) {
             Click()
             Sleep(150)
             
-            if (stepIdx == 3) {
+            if (stepIdx == 2) {
                 SafeClipboardPaste(item.name)
                 Sleep(200)
-            } else if (stepIdx == 5) {
+            } else if (stepIdx == 4) {
                 SafeClipboardPaste(String(item.qty))
                 Sleep(200)
             }
@@ -875,11 +913,28 @@ ExecutePerBiomeAutoPop(currentBiome) {
         LblBiomeOneShotStatus.Opt("cFF0000")
     }
     
-    LogMsg("🛑 [Auto Pop] Finished popping for [" currentBiome "]. One-Shot Locked.")
+    LogMsg("🛑 [Auto Pop] Finished popping for [" currentBiome "]. BR/SC unlocked.")
     IsPopping := false
 }
 
-RefreshLogPath(*) {
+GetLatestPlayerLogFile() {
+    logDir := EnvGet("LOCALAPPDATA") "\Roblox\logs"
+    latestFile := ""
+    latestTime := 0
+    
+    Loop Files logDir "\*.log" {
+        if (InStr(A_LoopFileName, "Launcher") || InStr(A_LoopFileName, "Crash"))
+            continue
+            
+        if (A_LoopFileTimeModified > latestTime) {
+            latestTime := A_LoopFileTimeModified
+            latestFile := A_LoopFilePath
+        }
+    }
+    return latestFile
+}
+
+RefreshLogPath() {
     latestFile := GetLatestPlayerLogFile()
     if latestFile
         LblLogPath.Value := "Monitoring log file:`n" latestFile
@@ -887,7 +942,7 @@ RefreshLogPath(*) {
         LblLogPath.Value := "⚠️ No Roblox Player Log file found!"
 }
 
-ForceScanLogNow(*) {
+ForceScanLogNow() {
     latestFile := GetLatestPlayerLogFile()
     if !latestFile {
         LogMsg("[Debug Check] ROBLOX PLAYER LOG FILE NOT FOUND!")
@@ -895,7 +950,7 @@ ForceScanLogNow(*) {
     }
     
     try {
-        f := FileOpen(latestFile, "r -w", "UTF-8")
+        f := FileOpen(latestFile, "r", "UTF-8")
         if !f {
             LogMsg("[Debug Check] Failed to open log file!")
             return
@@ -918,7 +973,7 @@ ForceScanLogNow(*) {
     }
 }
 
-TestWebhookAction(*) {
+TestWebhookAction() {
     SaveWebhookSettings()
     if WebhookURL {
         TestWebhookEmbed()
@@ -1003,11 +1058,11 @@ SendWebhookEmbed(biomeName, eventType, startTime := "") {
         fieldsJson := '[{"name": "User :", "value": "' . Username . '", "inline": true}, {"name": "Start Time :", "value": "' . timeStr . '", "inline": true}]'
     } else {
         titleText := "🛑 Biome Ended - [ " . bKey . " ]"
-        descJson := '"description": "Server : ' . serverText . '", '
-        fieldsJson := '[{"name": "User :", "value": "' . Username . '", "inline": true}, {"name": "End Time :", "value": "' . timeStr . '", "inline": true}, {"name": "Duration :", "value": "' . (startTime ? startTime : "Unknown") . '", "inline": false}]'
+        descJson := '""'
+        fieldsJson := '[{"name": "End Time :", "value": "' . timeStr . '", "inline": true}, {"name": "Duration :", "value": "' . (startTime ? startTime : "Unknown") . '", "inline": true}]'
     }
     
-    jsonPayload := '{' . contentJson . '"embeds": [{"title": "' . titleText . '", "color": ' . colorDec . ', ' . descJson . '"fields": ' . fieldsJson . ', "thumbnail": {"url": "' . imgUrl . '"}, "footer": {"text": "' . FOOTER_TEXT . '", "icon_url": "' . LIGHTNING_ICON_URL . '"}}]}'
+    jsonPayload := '{' . contentJson . '"embeds": [{"title": "' . titleText . '", "color": ' . colorDec . ', ' . (descJson != '""' ? descJson : "") . '"fields": ' . fieldsJson . ', "thumbnail": {"url": "' . imgUrl . '"}, "footer": {"text": "' . FOOTER_TEXT . '", "icon_url": "' . LIGHTNING_ICON_URL . '"}}]}'
     
     try {
         wh := ComObject("WinHttp.WinHttpRequest.5.1")
@@ -1058,7 +1113,7 @@ TimerLoop() {
     LblTimer.Value := "RUNNING: " h ":" m ":" s
 }
 
-ResetCounts(*) {
+ResetCounts() {
     global BiomeCounts
     for b in AllBiomes {
         BiomeCounts[b] := 0
@@ -1100,7 +1155,7 @@ InitLogStateOnStart() {
     LogCurrentFile := latestFile
     
     try {
-        f := FileOpen(latestFile, "r -w", "UTF-8")
+        f := FileOpen(latestFile, "r", "UTF-8")
         if !f
             return
             
@@ -1161,7 +1216,7 @@ LogMonitorLoop() {
     }
     
     try {
-        f := FileOpen(latestFile, "r -w", "UTF-8")
+        f := FileOpen(latestFile, "r", "UTF-8")
         if !f
             return
             
